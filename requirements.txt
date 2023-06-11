@@ -9,7 +9,7 @@ python_speech_features
 scipy
 transformers
 tk
-PIL
+Pillow
 requests
 scipy
 sounddevice
