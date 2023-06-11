@@ -8,7 +8,7 @@ pyngrok
 python_speech_features
 scipy
 transformers
-tkinter
+tk
 PIL
 requests
 scipy
