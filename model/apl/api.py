@@ -174,7 +174,7 @@ async def predict(request: Request):
 
 def run_api(auth_token=None):
     if auth_token is not None:
-        ngrok.set_auth_token()
+        ngrok.set_auth_token(auth_token)
         ngrok_tunnel = ngrok.connect(8085) 
         print("public url: ", ngrok_tunnel.public_url)
         nest_asyncio.apply()
