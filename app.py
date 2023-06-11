@@ -6,10 +6,12 @@ from scipy.io.wavfile import write
 import sounddevice as sd
 
 # url = "http://127.0.0.1:8000"
-url = 'https://2b53-34-124-233-78.ngrok-free.app'
+url = 'https://1330-34-132-3-66.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
+if not os.path.exists(audio_folder):
+    os.mkdir(audio_folder)
 
 class FirstFrame:
     def __init__(self, app):
@@ -141,19 +143,22 @@ class SecondFrame:
         t.start()
 
     def submit(self):
-        print("Analysing")
-        text = self.text_talk
-        self.record_btn.config(state=tk.DISABLED)
-        with open(self.save_file_temp, 'rb') as f:
-            result = requests.post(url=f'{url}/predict', data={'text':text}, files={'audio': f}).text
-        result = eval(result)
-        wrong_index = eval(result['wrong_index'])
-        for s, e in wrong_index:
-            self.text_phoneme_frame.tag_add('start', f'1.{s}', f'1.{e}')
-        self.text_phoneme_frame.config(foreground='green')
-        self.text_phoneme_frame.tag_config("start", foreground='red')
-        self.record_btn.config(state=tk.NORMAL)
-        self.create_show_result(float(result['correct_rate']))
+        try:
+            print("Analysing")
+            text = self.text_talk
+            self.record_btn.config(state=tk.DISABLED)
+            with open(self.save_file_temp, 'rb') as f:
+                result = requests.post(url=f'{url}/predict', data={'text':text}, files={'audio': f}).text
+            result = eval(result)
+            wrong_index = eval(result['wrong_index'])
+            for s, e in wrong_index:
+                self.text_phoneme_frame.tag_add('start', f'1.{s}', f'1.{e}')
+            self.text_phoneme_frame.config(foreground='green')
+            self.text_phoneme_frame.tag_config("start", foreground='red')
+            self.record_btn.config(state=tk.NORMAL)
+            self.create_show_result(float(result['correct_rate']))
+        except Exception as e:
+            print(e)
 
     def play_recording(self):
         if self.is_playing_record:
