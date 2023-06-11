@@ -1,0 +1,15 @@
+python-multipart
+pyctcdecode
+onnxruntime
+g2p_en
+fastapi
+uvicorn
+pyngrok
+python_speech_features
+scipy
+transformers
+tkinter
+PIL
+requests
+scipy
+sounddevice
