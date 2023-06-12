@@ -34,14 +34,13 @@ class LinguisticEncoder(nn.Module):
     def __init__(self, num_features_out=768, vocab_size=40):
         super().__init__()
         self.embedding  = nn.Embedding(vocab_size+1, 64, padding_idx=vocab_size)
-        self.bi_lstm    = nn.LSTM(input_size=64, hidden_size=num_features_out, bidirectional=True, batch_first=True)
+        self.bi_lstm    = nn.LSTM(input_size=64, hidden_size=num_features_out//2, bidirectional=True, batch_first=True)
         self.linear     = nn.Linear(num_features_out, num_features_out)
 
     def forward(self, x):
         # x shape : batch_size x length_phoneme
         x           = self.embedding(x)     # batch_size x length_phoneme x 64
-        _, (hk, hv) = self.bi_lstm(x)       
-        hk          = hk.transpose(0, 1)
-        hv          = hv.transpose(0, 1)
-        hk          = self.linear(hk)       
-        return hk, hv
+        x, (h, c)   = self.bi_lstm(x)
+        Hk          = self.linear(x)
+        Hv          = x
+        return Hk, Hv

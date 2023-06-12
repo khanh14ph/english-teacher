@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 
 class CNN_Stack(nn.Module):
     def __init__(self, num_features, p=0.1):
@@ -13,9 +14,9 @@ class CNN_Stack(nn.Module):
         x = x.unsqueeze(1)  # -> batch_size x 1 x time x num_features
         x = self.conv2d(x)  # -> batch_size x 1 x time x num_features
         x = x.squeeze(1)    # -> batch_size x time x num_features
-        x = x.transpose(1, 2)
+        x = torch.permute(x, (0, 2, 1))
         x = self.bn(x)      # -> batch_size x time x num_features
-        x = x.transpose(1, 2)
+        x = torch.permute(x, (0, 2, 1))
         x = self.relu(x)    # -> batch_size x time x num_features
         x = self.dropout(x) # -> batch_size x time x num_features
         return x
@@ -32,8 +33,8 @@ class RNN_Stack(nn.Module):
 
     def forward(self, x):
         x, _    = self.bi_lstm(x)   # batch_size x time x num_features_out
-        x       = x.transpose(1, 2)
+        x = torch.permute(x, (0, 2, 1))
         x       = self.bn(x)        # batch_size x time x num_features_out
-        x       = x.transpose(1, 2)
+        x = torch.permute(x, (0, 2, 1))
         x       = self.dropout(x)   # batch_size x time x num_features_out
         return x

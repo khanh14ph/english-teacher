@@ -7,9 +7,9 @@ class APL(nn.Module):
     def __init__(self, vocab_size):
         super().__init__()
         self.acoustic_encoder   = AcousticEncoder(81, 256)
-        self.linguistic_encoder  = LinguisticEncoder(768, vocab_size)
-        self.phonetic_encoder   = PhoneticEncoder(1024, 512)
-        self.decoder            = Decoder(768, vocab_size)
+        self.linguistic_encoder  = LinguisticEncoder(1024, vocab_size)
+        self.phonetic_encoder   = PhoneticEncoder(1024, 768)
+        self.decoder            = Decoder(1024, vocab_size)
 
     def forward(self, acoustic, phonetic, linguistic):
         Ha      = self.acoustic_encoder(acoustic)
@@ -22,7 +22,7 @@ class APL(nn.Module):
 
 
 if __name__ == '__main__':
-    batch_size  = 3
+    batch_size  = 4
     acoustic    = torch.rand(batch_size, 168, 81)
     phonetic    = torch.rand(batch_size, 168, 1024)
     linguistic  = torch.randint(1, 39, size=(batch_size, 40))
