@@ -6,7 +6,7 @@ from scipy.io.wavfile import write
 import sounddevice as sd
 
 # url = "http://127.0.0.1:8000"
-url = ' https://49b0-35-230-111-113.ngrok-free.app'
+url = 'https://ad26-34-121-56-224.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
