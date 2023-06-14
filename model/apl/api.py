@@ -31,7 +31,7 @@ ipa_mapping = {
     'y': 'j', 'ng': 'ŋ', 'dh': 'ð', 'w': 'w', 'er': 'ɝ', 'r': 'ɹ', 'm': 'm', 'p': 'p',
     'k': 'k', 'ah': 'ʌ', 'sh': 'ʃ', 't': 't', 'aw': 'aʊ', 'hh': 'h', 'ey': 'eɪ', 'oy': 'ɔɪ',
     'zh': 'ʒ', 'n': 'n', 'th': 'θ', 'z': 'z', 'aa': 'ɑ', 'ao': 'aʊ', 'f': 'f', 'b': 'b', 'ih': 'ɪ',
-    'jh': 'dʒ', 's': 's', 'err': 'ɝ', 'iy': 'i', 'uh': 'ʊ', 'ch': 'tʃ', 'g': 'g', 'ay': 'aɪ', 'l': 'l',
+    'jh': 'dʒ', 's': 's', 'err': '', 'iy': 'i', 'uh': 'ʊ', 'ch': 'tʃ', 'g': 'g', 'ay': 'aɪ', 'l': 'l',
     'ae': 'æ', 'd': 'd', 'v': 'v', 'uw': 'u', 'eh': 'ɛ', 'ow': 'oʊ'
 }
 
@@ -116,6 +116,7 @@ def run_model(text, audio_path):
         x = x.detach().cpu().numpy()
         decoder = build_ctcdecoder(
             labels = labels,
+            kenlm_model_path = os.path.join(current_folder, 'text.arpa')
         )
         hypothesis = str(decoder.decode(x)).strip()
         return phonemes, hypothesis, word_phoneme_in
