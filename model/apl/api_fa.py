@@ -140,7 +140,7 @@ async def get_phoneme(request: Request):
         if i > 0 and word_phoneme_in[i] > word_phoneme_in[i - 1]:
             result += ' '
         result += ipa_mapping[phonemes[i]]
-    return {'phonetics':f'/{result}/'}
+    return {'phonetics':f'{result}'}
 
 @app.post('/predict')
 async def predict(request: Request):
@@ -151,39 +151,29 @@ async def predict(request: Request):
         f.write(byte_content)
     phonemes, hypothesis, word_phoneme_in, hyp_score = run_model(text, path_temp)
     cnt, l, temp = Correct_Rate(phonemes.split(), hypothesis.split())
+    phonemes, hyp_score = align_for_force_alignment(phonemes.split(), hyp_score)
     print(phonemes)
-    print(hypothesis)
-    p, h = align_for_force_alignment(phonemes.split(), hyp_score)
-    phonemes, hypothesis = Align(phonemes.split(), hypothesis.split())
     print(hyp_score)
-    print(h)
-    print("-" * 150)
+    print('-' * 150)
 
-    model_detect = []
-    right_phonemes = []
+    result = [] # right_phoneme, model_predict, predict_score
     n = -1
     for i in range(len(phonemes)):
         if phonemes[i] != '<eps>':
             n += 1
             if n == 0 or word_phoneme_in[n] > word_phoneme_in[n - 1]:
-                model_detect.append([])
-                right_phonemes.append([])
-            model_detect[-1].append(ipa_mapping.get(hypothesis[i], ''))
-            right_phonemes[-1].append(ipa_mapping.get(phonemes[i], ''))
-    
-    current_index = 1
-    different = []
-    for i, w in enumerate(right_phonemes):
-        for j, p in enumerate(w):
-            if p != model_detect[i][j]:
-                different.append((current_index, current_index + len(p)))
-            current_index += len(p)
-        current_index += 1
-    
-    return {
-        'canonical': f'{right_phonemes}', 'model_predict': f'{model_detect}',
-        'correct_rate': f'{1 - cnt/l}', 'wrong_index': f'{different}'
-    }
+                result.append([])
+            if isinstance(hyp_score[i], tuple):
+                pred, predict_score = hyp_score[i]
+            else:
+                pred, predict_score = "<unk>", -1
+            result[-1].append((
+                ipa_mapping.get(phonemes[i], ''),
+                ipa_mapping.get(pred, ''),
+                predict_score
+            ))
+       
+    return {'correct_rate': f'{1 - cnt/l}', 'phoneme_result': str(result)}
 
 def run_api(auth_token=None):
     if auth_token is not None:

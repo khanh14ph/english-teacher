@@ -4,6 +4,7 @@ import requests, time, math, os
 from threading import Thread
 from scipy.io.wavfile import write
 import sounddevice as sd
+from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
 url = 'https://0c87-35-204-21-235.ngrok-free.app'
@@ -97,9 +98,18 @@ class SecondFrame:
 
         # for phoneme
         self.text_phoneme_frame = tk.Text(self.frame, borderwidth=0)
-        self.text_phoneme_frame.insert(tk.INSERT, self.text_phoneme)
+        self.show_text_phoneme([(self.text_phoneme, 'normal')])
         self.text_phoneme_frame.config(state=tk.DISABLED)
+        self.text_phoneme_frame.tag_config("right", foreground='green')
+        self.text_phoneme_frame.tag_config("wrong", foreground="red")
+        self.text_phoneme_frame.tag_config("neutral", foreground='#ff9f1c')
         self.text_phoneme_frame.pack(side='top', anchor='nw', padx=30)
+
+    def show_text_phoneme(self, dict_phoneme_tag):
+        self.text_phoneme_frame.insert(tk.INSERT, '/')
+        for key, value in dict_phoneme_tag:
+            self.text_phoneme_frame.insert(tk.INSERT, key, value)
+        self.text_phoneme_frame.insert(tk.INSERT, '/')
 
     def create_record_button(self):
         self.record_btn_size = 100
@@ -131,8 +141,8 @@ class SecondFrame:
         self.is_recording = True
         self.frame.img = self.load_image("recording.png", self.record_btn_size,self.record_btn_size)
         self.record_btn.config(image=self.frame.img)
-        self.text_phoneme_frame.tag_delete("start")
-        self.text_phoneme_frame.config(foreground='black')
+        self.text_phoneme_frame.delete("1.0","end")
+        self.show_text_phoneme([(self.text_phoneme, 'normal')])
 
     def stop_record(self):
         self.is_recording = False
@@ -153,11 +163,10 @@ class SecondFrame:
             with open(self.save_file_temp, 'rb') as f:
                 result = requests.post(url=f'{url}/predict', data={'text':text}, files={'audio': f}).text
             result = eval(result)
-            wrong_index = eval(result['wrong_index'])
-            for s, e in wrong_index:
-                self.text_phoneme_frame.tag_add('start', f'1.{s}', f'1.{e}')
-            self.text_phoneme_frame.config(foreground='green')
-            self.text_phoneme_frame.tag_config("start", foreground='red')
+
+            map_phoneme_color = map_color(eval(result['phoneme_result']))
+            self.show_text_phoneme(map_phoneme_color)
+            
             self.record_btn.config(state=tk.NORMAL)
             self.create_show_result(float(result['correct_rate']))
         except Exception as e:
