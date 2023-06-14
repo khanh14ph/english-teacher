@@ -8,4 +8,6 @@ def map_color(score_list, start_index=1) -> dict:
                 tag = 'wrong' # 'neutral'
             list_result.append((right_phoneme, tag))
         list_result.append((" ", 'normal'))
+    if len(list_result) > 0:
+        list_result.pop()
     return list_result
