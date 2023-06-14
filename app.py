@@ -6,7 +6,7 @@ from scipy.io.wavfile import write
 import sounddevice as sd
 
 # url = "http://127.0.0.1:8000"
-url = 'https://fc7d-34-90-22-227.ngrok-free.app'
+url = 'https://9863-34-27-146-111.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
@@ -34,14 +34,17 @@ class FirstFrame:
     
     def search(self):
         def run_thread():
-            print("Searching")
-            text = self.entry.get()
-            self.button.config(state=tk.DISABLED)
-            result = requests.post(url=f'{url}/phonemes', data={'text':text}).text
-            result = eval(result)
-            print(result['phonetics'])
-            frame = SecondFrame(self.app, text, result['phonetics'])
-            self.app.set_frame(frame)
+            try:
+                print("Searching")
+                text = self.entry.get()
+                self.button.config(state=tk.DISABLED)
+                result = requests.post(url=f'{url}/phonemes', data={'text':text}).text
+                result = eval(result)
+                print(result['phonetics'])
+                frame = SecondFrame(self.app, text, result['phonetics'])
+                self.app.set_frame(frame)
+            except Exception as e:
+                print(f"Error in search function: {e}")
         t = Thread(target=run_thread, daemon=True)
         t.start()
 
@@ -158,7 +161,7 @@ class SecondFrame:
             self.record_btn.config(state=tk.NORMAL)
             self.create_show_result(float(result['correct_rate']))
         except Exception as e:
-            print(e)
+            print(f"Error in submit function: {e}")
 
     def play_recording(self):
         if self.is_playing_record:
