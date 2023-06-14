@@ -121,6 +121,7 @@ def run_model(text, audio_path):
             kenlm_model_path = os.path.join(current_folder, 'text.arpa')
         )
         hypothesis = str(decoder.decode(x)).strip()
+        print(hypothesis)
         return phonemes, hypothesis, word_phoneme_in
 
 app = FastAPI()
