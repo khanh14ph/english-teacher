@@ -170,7 +170,7 @@ async def predict(request: Request):
             if isinstance(hyp_score[i], tuple):
                 pred, predict_score = hyp_score[i]
             else:
-                pred, predict_score = "<unk>", -1
+                pred, predict_score = "<unk>", 0
             result[-1].append((
                 ipa_mapping.get(phoneme, ''),
                 ipa_mapping.get(pred, ''),

@@ -5,12 +5,12 @@ def map_color(score_list, start_index=1) -> dict:
         # right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score
         for right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score in word:
             if right_phoneme == model_predict_phoneme:
-                if right_phoneme_score >= 0.4:
+                if right_phoneme_score >= 0.1:
                     tag = "right"
                 else:
                     tag = 'neutral'
             else:
-                if right_phoneme_score <= 0.1:
+                if right_phoneme_score <= 0.05:
                     tag = 'wrong'
                 else:
                     tag = 'neutral' # 'neutral'
