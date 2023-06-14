@@ -2,7 +2,7 @@ from metric import Align, Correct_Rate
 from g2p_en import G2p
 from fastapi import FastAPI, Request
 from pyngrok import ngrok
-import os, torch, librosa, uvicorn, nest_asyncio
+import os, torch, librosa, uvicorn, nest_asyncio, gc
 import numpy as np
 from python_speech_features import fbank
 import scipy.io.wavfile as wav
@@ -70,7 +70,7 @@ model = model.to(device)
 model.eval()
 
 labels = sorted([w for w in list(dict_vocab.keys())], key=lambda x : dict_vocab[x])
-labels = [f'{w} ' for w in labels]
+labels = [f'{w}_' for w in labels]
 
 def text_to_tensor(text):
     text = text.lower()
@@ -114,6 +114,8 @@ def run_model(text, audio_path):
         outputs = model(acoustic, phonetic, linguistic)
         x = F.log_softmax(outputs,dim=2).squeeze(0)
         x = x.detach().cpu().numpy()
+        torch.cuda.empty_cache()
+        gc.collect()
         decoder = build_ctcdecoder(
             labels = labels,
             kenlm_model_path = os.path.join(current_folder, 'text.arpa')
