@@ -125,6 +125,8 @@ def run_model(text, audio_path):
         )
         hypothesis = str(decoder.decode(x)).strip()
         hyp_score = calculate_score(x1, hypothesis.split(), dict_vocab)
+        pho_score = calculate_score(x1, phonemes.split(), dict_vocab)
+        print(pho_score)
         return phonemes, hypothesis, word_phoneme_in, hyp_score
 
 app = FastAPI()
