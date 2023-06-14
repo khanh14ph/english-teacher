@@ -151,8 +151,8 @@ async def predict(request: Request):
         f.write(byte_content)
     phonemes, hypothesis, word_phoneme_in, hyp_score = run_model(text, path_temp)
     cnt, l, temp = Correct_Rate(phonemes.split(), hypothesis.split())
-    phonemes, hypothesis = Align(phonemes.split(), hypothesis.split())
     p, h = align_for_force_alignment(phonemes.split(), hyp_score)
+    phonemes, hypothesis = Align(phonemes.split(), hypothesis.split())
     print(hyp_score)
     print(h)
 
