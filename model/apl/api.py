@@ -70,7 +70,7 @@ model = model.to(device)
 model.eval()
 
 labels = sorted([w for w in list(dict_vocab.keys())], key=lambda x : dict_vocab[x])
-labels = [f'{w}_' for w in labels]
+labels = [f'{w}' for w in labels]
 
 def text_to_tensor(text):
     text = text.lower()
