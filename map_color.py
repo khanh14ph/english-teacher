@@ -2,14 +2,15 @@ def map_color(score_list, start_index=1) -> dict:
     list_result = list()
     print(score_list)
     for word in score_list:
-        for right_phoneme, model_predict, score in word:
-            if right_phoneme == model_predict:
-                if score >= 0.4:
+        # right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score
+        for right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score in word:
+            if right_phoneme == model_predict_phoneme:
+                if right_phoneme_score >= 0.4:
                     tag = "right"
                 else:
                     tag = 'neutral'
             else:
-                if score >= 0.1:
+                if right_phoneme_score <= 0.1:
                     tag = 'wrong'
                 else:
                     tag = 'neutral' # 'neutral'

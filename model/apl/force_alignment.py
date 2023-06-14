@@ -62,7 +62,16 @@ def backtrack(trellis, emission, tokens, blank_id=0):
             if j == 0:
                 break
     else:
-        raise ValueError("Failed to align")
+        # raise ValueError("Failed to align")
+        print("Failed to align")
+        if len(path) > 0:
+            t = path[-1].token_index
+        else:
+            t = len(tokens)
+
+        for i in range(t, 0, -1):
+            path.append(Point(i - 1, -1, 0))
+            
     return path[::-1]
 
 

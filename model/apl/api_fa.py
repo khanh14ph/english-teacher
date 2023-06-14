@@ -124,10 +124,15 @@ def run_model(text, audio_path):
             kenlm_model_path = os.path.join(current_folder, 'text.arpa')
         )
         hypothesis = str(decoder.decode(x)).strip()
-        hyp_score = calculate_score(x1, hypothesis.split(), dict_vocab)
+        hyp_score = [(p, 1) for p in hypothesis.split()]
         pho_score = calculate_score(x1, phonemes.split(), dict_vocab)
+        cnt, l, temp = Correct_Rate(phonemes.split(), hypothesis.split())
+        correct_rate = 1 - cnt/l
+        print(phonemes)
         print(pho_score)
-        return phonemes, hypothesis, word_phoneme_in, hyp_score
+        print(hypothesis)
+        print(hyp_score)
+        return pho_score, hyp_score, word_phoneme_in, correct_rate
 
 app = FastAPI()
 
@@ -151,17 +156,14 @@ async def predict(request: Request):
     byte_content = await form_data['audio'].read()
     with open(path_temp, 'wb') as f:
         f.write(byte_content)
-    phonemes, hypothesis, word_phoneme_in, hyp_score = run_model(text, path_temp)
-    cnt, l, temp = Correct_Rate(phonemes.split(), hypothesis.split())
-    phonemes, hyp_score = align_for_force_alignment(phonemes.split(), hyp_score)
-    print(phonemes)
-    print(hyp_score)
-    print('-' * 150)
+    pho_score, hyp_score, word_phoneme_in, correct_rate = run_model(text, path_temp)
+    pho_score, hyp_score = align_for_force_alignment(pho_score, hyp_score)
 
-    result = [] # right_phoneme, model_predict, predict_score
+    result = [] # right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score
     n = -1
-    for i in range(len(phonemes)):
-        if phonemes[i] != '<eps>':
+    for i in range(len(pho_score)):
+        if pho_score[i] != '<eps>':
+            phoneme, score = pho_score[i]
             n += 1
             if n == 0 or word_phoneme_in[n] > word_phoneme_in[n - 1]:
                 result.append([])
@@ -170,12 +172,13 @@ async def predict(request: Request):
             else:
                 pred, predict_score = "<unk>", -1
             result[-1].append((
-                ipa_mapping.get(phonemes[i], ''),
+                ipa_mapping.get(phoneme, ''),
                 ipa_mapping.get(pred, ''),
+                score,
                 predict_score
             ))
        
-    return {'correct_rate': f'{1 - cnt/l}', 'phoneme_result': str(result)}
+    return {'correct_rate': str(correct_rate), 'phoneme_result': str(result)}
 
 def run_api(auth_token=None):
     if auth_token is not None:
