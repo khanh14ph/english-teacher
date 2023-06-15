@@ -124,7 +124,8 @@ def run_model(text, audio_path):
             kenlm_model_path = os.path.join(current_folder, 'text.arpa')
         )
         hypothesis = str(decoder.decode(x)).strip()
-        hyp_score = [(p, 1) for p in hypothesis.split()]
+        # hyp_score = [(p, 1) for p in hypothesis.split()]
+        hyp_score = calculate_score(x1, hypothesis.split(), dict_vocab)
         pho_score = calculate_score(x1, phonemes.split(), dict_vocab)
         cnt, l, temp = Correct_Rate(phonemes.split(), hypothesis.split())
         correct_rate = 1 - cnt/l
@@ -196,3 +197,7 @@ def run_api(auth_token=None):
         print(f"{'-'*50}RUN API LOCAL{'-'*50}")
 
     uvicorn.run(app, port=8085)
+
+if __name__ == '__main__':
+    auth_tok = '2NrvRC5TQJEprMHSR4Y7PgFmkL7_7oF8GoYvtBRfYDEykwB7E'
+    run_api(auth_tok)
