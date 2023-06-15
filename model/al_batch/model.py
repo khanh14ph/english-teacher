@@ -4,9 +4,9 @@ from encoder import AcousticEncoder, LinguisticEncoder
 from decoder import Decoder
 
 class AL(nn.Module):
-    def __init__(self, vocab_size):
+    def __init__(self, vocab_size, num_features_in=81):
         super().__init__()
-        self.acoustic_encoder   = AcousticEncoder(81, 768)
+        self.acoustic_encoder   = AcousticEncoder(num_features_in, 768)
         self.linguistic_encoder  = LinguisticEncoder(768, vocab_size)
         self.decoder            = Decoder(768, vocab_size)
 
