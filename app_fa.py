@@ -7,7 +7,7 @@ import sounddevice as sd
 from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
-url = 'https://b4c4-1-52-201-146.ngrok-free.app'
+url = 'https://4d17-1-52-201-146.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
@@ -41,7 +41,7 @@ class FirstFrame:
                 self.button.config(state=tk.DISABLED)
                 result = requests.post(url=f'{url}/phonemes', data={'text':text}).text
                 result = eval(result)
-                print(result['phonetics'])
+                # print(result['phonetics'])
                 frame = SecondFrame(self.app, text, result['phonetics'])
                 self.app.set_frame(frame)
             except Exception as e:
@@ -196,13 +196,13 @@ class SecondFrame:
     def show_compare_window(self, event):
         try:
             tag_name = event.widget.tag_names(tk.CURRENT)[0]
-            print("Clicked on tags:", tag_name)
+            # print("Clicked on tags:", tag_name)
             _, right_phoneme, predict_phoneme, right_score = tag_name.split('|')
             print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
 
             self.show_text_phoneme(self.map_phoneme_color)
             self.text_phoneme_frame.config(state=tk.NORMAL)
-            self.text_phoneme_frame.insert(tk.INSERT, f"\n\nRight phoneme: {right_phoneme}")
+            self.text_phoneme_frame.insert(tk.INSERT, f"\n\nSound: {right_phoneme}")
             self.text_phoneme_frame.insert(tk.INSERT, f"\nYou said: {predict_phoneme}")
             self.text_phoneme_frame.insert(tk.INSERT, f"\nScore: {round(float(right_score)*100)}%")
             self.text_phoneme_frame.config(state=tk.DISABLED)

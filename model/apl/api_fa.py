@@ -1,7 +1,7 @@
 from metric import align_for_force_alignment, Correct_Rate, Align
 from g2p_en import G2p
 from fastapi import FastAPI, Request
-from pyngrok import ngrok
+from pyngrok import ngrok, conf
 import os, torch, librosa, uvicorn, nest_asyncio, gc, time
 import numpy as np
 from python_speech_features import fbank
@@ -189,6 +189,7 @@ async def predict(request: Request):
 def run_api(auth_token=None):
     if auth_token is not None:
         ngrok.set_auth_token(auth_token)
+        conf.get_default().region = "in"
         ngrok_tunnel = ngrok.connect(8085) 
         print("public url: ", ngrok_tunnel.public_url)
         nest_asyncio.apply()
