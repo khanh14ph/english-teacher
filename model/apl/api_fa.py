@@ -119,7 +119,7 @@ def run_model(text, audio_path):
         x = x1.numpy()
         decoder = build_ctcdecoder(
             labels = labels,
-            kenlm_model_path = os.path.join(current_folder, 'text.arpa')
+            # kenlm_model_path = os.path.join(current_folder, 'text.arpa')
         )
         hypothesis = str(decoder.decode(x)).strip()
         # hyp_score = [(p, 1) for p in hypothesis.split()]
