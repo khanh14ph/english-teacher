@@ -117,8 +117,6 @@ def run_model(text, audio_path):
         x = F.log_softmax(outputs,dim=2).squeeze(0)
         x1 = x.detach().cpu()
         x = x1.numpy()
-        torch.cuda.empty_cache()
-        gc.collect()
         decoder = build_ctcdecoder(
             labels = labels,
             kenlm_model_path = os.path.join(current_folder, 'text.arpa')
@@ -133,6 +131,8 @@ def run_model(text, audio_path):
         print(pho_score)
         print(hypothesis)
         print(hyp_score)
+        torch.cuda.empty_cache()
+        gc.collect()
         return pho_score, hyp_score, word_phoneme_in, correct_rate
 
 app = FastAPI()
