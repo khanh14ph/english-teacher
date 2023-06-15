@@ -6,16 +6,17 @@ def map_color(score_list, start_index=1) -> dict:
         for right_phoneme, model_predict_phoneme, right_phoneme_score, predict_score in word:
             if right_phoneme == model_predict_phoneme:
                 if right_phoneme_score >= 0.1:
-                    tag = "right"
+                    tag = "green"
                 else:
-                    tag = 'neutral'
+                    tag = '#ff9f1c'
             else:
                 if right_phoneme_score <= 0.05:
-                    tag = 'wrong'
+                    tag = 'red'
                 else:
-                    tag = 'neutral' # 'neutral'
-            list_result.append((right_phoneme, tag))
-        list_result.append((" ", 'normal'))
+                    tag = '#ff9f1c'
+            list_result.append((right_phoneme, model_predict_phoneme, right_phoneme_score, tag))
+        list_result.append((" "," ", 1, 'black'))
+
     if len(list_result) > 0:
         list_result.pop()
     return list_result

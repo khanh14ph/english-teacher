@@ -7,7 +7,7 @@ import sounddevice as sd
 from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
-url = 'https://19cc-35-197-146-57.ngrok-free.app'
+url = 'https://b181-35-196-136-255.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
@@ -98,20 +98,31 @@ class SecondFrame:
 
         # for phoneme
         self.text_phoneme_frame = tk.Text(self.frame, borderwidth=0)
-        self.show_text_phoneme([(self.text_phoneme, 'normal')])
-        self.text_phoneme_frame.tag_config("right", foreground='green')
-        self.text_phoneme_frame.tag_config("wrong", foreground="red")
-        self.text_phoneme_frame.tag_config("neutral", foreground='#ff9f1c')
+        self.show_text_phoneme([(self.text_phoneme, " ", 1, 'black')])
         self.text_phoneme_frame.pack(side='top', anchor='nw', padx=30)
 
     def show_text_phoneme(self, dict_phoneme_tag):
         self.text_phoneme_frame.config(state=tk.NORMAL)
         self.text_phoneme_frame.delete("1.0","end")
+        tag_names = self.text_phoneme_frame.tag_names()
+        [self.text_phoneme_frame.tag_delete(tn) for tn in tag_names]
+
         self.text_phoneme_frame.insert(tk.INSERT, '/')
-        for key, value in dict_phoneme_tag:
-            self.text_phoneme_frame.insert(tk.INSERT, key, value)
+        for i, data in enumerate(dict_phoneme_tag):
+            right_phoneme, predict_phoneme, right_phoneme_score, color = data
+            tag_name = f"tag_{i}"
+            self.text_phoneme_frame.insert(tk.INSERT, right_phoneme, tag_name)
+            self.text_phoneme_frame.tag_config(tag_name, foreground=color)
+            if color != 'black':
+                self.text_phoneme_frame.tag_bind(
+                    tag_name, "<Button-1>", 
+                    lambda event : self.show_compare_window(right_phoneme, predict_phoneme, right_phoneme_score)
+                )
         self.text_phoneme_frame.insert(tk.INSERT, '/')
         self.text_phoneme_frame.config(state=tk.DISABLED)
+
+    def show_compare_window(self, right_phoneme, predict_phoneme, right_score):
+        print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
 
     def create_record_button(self):
         self.record_btn_size = 100
@@ -143,7 +154,7 @@ class SecondFrame:
         self.is_recording = True
         self.frame.img = self.load_image("recording.png", self.record_btn_size,self.record_btn_size)
         self.record_btn.config(image=self.frame.img)
-        self.show_text_phoneme([(self.text_phoneme, 'normal')])
+        self.show_text_phoneme([(self.text_phoneme, " ", 1, 'black')])
 
     def stop_record(self):
         self.is_recording = False
