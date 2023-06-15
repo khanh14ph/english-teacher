@@ -200,5 +200,5 @@ def run_api(auth_token=None, region='ap'):
     uvicorn.run(app, port=8085)
 
 if __name__ == '__main__':
-    auth_tok = '2NrvRC5TQJEprMHSR4Y7PgFmkL7_7oF8GoYvtBRfYDEykwB7E'
+    auth_tok = 'your ngrok auth token'
     run_api(auth_tok)

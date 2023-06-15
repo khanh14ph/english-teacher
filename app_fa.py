@@ -7,7 +7,7 @@ import sounddevice as sd
 from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
-url = 'https://ddcb-34-126-162-49.ngrok-free.app'
+url = 'https://f85a-35-196-52-119.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
