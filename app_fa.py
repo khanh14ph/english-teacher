@@ -7,7 +7,7 @@ import sounddevice as sd
 from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
-url = 'https://b181-35-196-136-255.ngrok-free.app'
+url = 'https://9337-34-69-213-227.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
@@ -102,27 +102,24 @@ class SecondFrame:
         self.text_phoneme_frame.pack(side='top', anchor='nw', padx=30)
 
     def show_text_phoneme(self, dict_phoneme_tag):
-        self.text_phoneme_frame.config(state=tk.NORMAL)
-        self.text_phoneme_frame.delete("1.0","end")
-        tag_names = self.text_phoneme_frame.tag_names()
-        [self.text_phoneme_frame.tag_delete(tn) for tn in tag_names]
+        try:
+            self.text_phoneme_frame.config(state=tk.NORMAL)
+            self.text_phoneme_frame.delete("1.0","end")
+            tag_names = self.text_phoneme_frame.tag_names()
+            [self.text_phoneme_frame.tag_delete(tn) for tn in tag_names]
 
-        self.text_phoneme_frame.insert(tk.INSERT, '/')
-        for i, data in enumerate(dict_phoneme_tag):
-            right_phoneme, predict_phoneme, right_phoneme_score, color = data
-            tag_name = f"tag_{i}"
-            self.text_phoneme_frame.insert(tk.INSERT, right_phoneme, tag_name)
-            self.text_phoneme_frame.tag_config(tag_name, foreground=color)
-            if color != 'black':
-                self.text_phoneme_frame.tag_bind(
-                    tag_name, "<Button-1>", 
-                    lambda event : self.show_compare_window(right_phoneme, predict_phoneme, right_phoneme_score)
-                )
-        self.text_phoneme_frame.insert(tk.INSERT, '/')
-        self.text_phoneme_frame.config(state=tk.DISABLED)
-
-    def show_compare_window(self, right_phoneme, predict_phoneme, right_score):
-        print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
+            self.text_phoneme_frame.insert(tk.INSERT, '/')
+            for i, data in enumerate(dict_phoneme_tag):
+                right_phoneme, predict_phoneme, right_phoneme_score, color = data
+                tag_name = f'tag_{i}|{right_phoneme}|{predict_phoneme}|{right_phoneme_score}'
+                self.text_phoneme_frame.insert(tk.INSERT, right_phoneme, tag_name)
+                self.text_phoneme_frame.tag_config(tag_name, foreground=color)
+                if color != 'black':
+                    self.text_phoneme_frame.tag_bind(tag_name, "<Button-1>", self.show_compare_window)
+            self.text_phoneme_frame.insert(tk.INSERT, '/')
+            self.text_phoneme_frame.config(state=tk.DISABLED)
+        except Exception as e:
+            print(f'show_text_phoneme: {e}')
 
     def create_record_button(self):
         self.record_btn_size = 100
@@ -176,8 +173,8 @@ class SecondFrame:
                 result = requests.post(url=f'{url}/predict', data={'text':text}, files={'audio': f}).text
             result = eval(result)
 
-            map_phoneme_color = map_color(eval(result['phoneme_result']))
-            self.show_text_phoneme(map_phoneme_color)
+            self.map_phoneme_color = map_color(eval(result['phoneme_result']))
+            self.show_text_phoneme(self.map_phoneme_color)
             
             self.record_btn.config(state=tk.NORMAL)
             self.create_show_result(float(result['correct_rate']))
@@ -195,6 +192,22 @@ class SecondFrame:
             self.is_playing_record = False
         t = Thread(target=run_thread, daemon=True)
         t.start()
+
+    def show_compare_window(self, event):
+        try:
+            tag_name = event.widget.tag_names(tk.CURRENT)[0]
+            print("Clicked on tags:", tag_name)
+            _, right_phoneme, predict_phoneme, right_score = tag_name.split('|')
+            print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
+
+            self.show_text_phoneme(self.map_phoneme_color)
+            self.text_phoneme_frame.config(state=tk.NORMAL)
+            self.text_phoneme_frame.insert(tk.INSERT, f"\n\nRight phoneme: {right_phoneme}")
+            self.text_phoneme_frame.insert(tk.INSERT, f"\nYou said: {predict_phoneme}")
+            self.text_phoneme_frame.insert(tk.INSERT, f"\nScore: {round(float(right_score)*100)}%")
+            self.text_phoneme_frame.config(state=tk.DISABLED)
+        except Exception as e:
+            print(f"Show compare window: {e}")
         
     def create_show_result(self, correct_rate):
         correct_rate = round(correct_rate * 100)

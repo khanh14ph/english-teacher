@@ -2,7 +2,7 @@ from metric import align_for_force_alignment, Correct_Rate, Align
 from g2p_en import G2p
 from fastapi import FastAPI, Request
 from pyngrok import ngrok
-import os, torch, librosa, uvicorn, nest_asyncio, gc
+import os, torch, librosa, uvicorn, nest_asyncio, gc, time
 import numpy as np
 from python_speech_features import fbank
 import scipy.io.wavfile as wav
@@ -139,6 +139,8 @@ app = FastAPI()
 @app.post('/phonemes')
 async def get_phoneme(request: Request):
     form_data: bytes = await request.form()
+    print("Receive request /phonemes")
+    t1 = time.time()
     text = form_data['text']
     phonemes, word_phoneme_in = text_to_phonemes(text)
     phonemes = phonemes.split()
@@ -147,13 +149,16 @@ async def get_phoneme(request: Request):
         if i > 0 and word_phoneme_in[i] > word_phoneme_in[i - 1]:
             result += ' '
         result += ipa_mapping[phonemes[i]]
+    print(f"Finish /phonemes post: {time.time() - t1}")
     return {'phonetics':f'{result}'}
 
 @app.post('/predict')
 async def predict(request: Request):
     form_data: bytes = await request.form()
+    print("Receive request /predict")
     text = form_data['text']
     byte_content = await form_data['audio'].read()
+    t1 = time.time()
     with open(path_temp, 'wb') as f:
         f.write(byte_content)
     pho_score, hyp_score, word_phoneme_in, correct_rate = run_model(text, path_temp)
@@ -177,7 +182,7 @@ async def predict(request: Request):
                 score,
                 predict_score
             ))
-       
+    print(f"Finish /predict post: {time.time() - t1}")   
     return {'correct_rate': str(correct_rate), 'phoneme_result': str(result)}
 
 def run_api(auth_token=None):
