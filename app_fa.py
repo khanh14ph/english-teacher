@@ -7,7 +7,7 @@ import sounddevice as sd
 from map_color import map_color
 
 # url = "http://127.0.0.1:8000"
-url = 'https://7999-34-91-56-44.ngrok-free.app'
+url = 'https://ddcb-34-126-162-49.ngrok-free.app'
 current_folder = os.path.dirname(os.path.realpath(__file__))
 img_folder = os.path.join(current_folder, 'img')
 audio_folder = os.path.join(current_folder, 'audio')
@@ -198,7 +198,7 @@ class SecondFrame:
             tag_name = event.widget.tag_names(tk.CURRENT)[0]
             # print("Clicked on tags:", tag_name)
             _, right_phoneme, predict_phoneme, right_score = tag_name.split('|')
-            print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
+            # print(f"Right phoneme: {right_phoneme}, You said: {predict_phoneme}, Score: {right_score}")
 
             self.show_text_phoneme(self.map_phoneme_color)
             self.text_phoneme_frame.config(state=tk.NORMAL)
@@ -212,10 +212,10 @@ class SecondFrame:
     def create_show_result(self, correct_rate):
         correct_rate = round(correct_rate * 100)
         font_large = ("Helvetica", 20, "normal")
-        if correct_rate <= 50:
+        if correct_rate < 40:
             color = '#d00000'
             temp = 'Try Again'
-        elif correct_rate <= 80:
+        elif correct_rate < 80:
             color = '#ff9f1c'
             temp = 'Almost Correct'
         else:
