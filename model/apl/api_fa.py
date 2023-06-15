@@ -186,10 +186,10 @@ async def predict(request: Request):
     print(f"Finish /predict post: {time.time() - t1}")   
     return {'correct_rate': str(correct_rate), 'phoneme_result': str(result)}
 
-def run_api(auth_token=None):
+def run_api(auth_token=None, region='ap'):
     if auth_token is not None:
         ngrok.set_auth_token(auth_token)
-        conf.get_default().region = "in"
+        conf.get_default().region = region
         ngrok_tunnel = ngrok.connect(8085) 
         print("public url: ", ngrok_tunnel.public_url)
         nest_asyncio.apply()
