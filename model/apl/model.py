@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
-from encoder import AcousticEncoder, LinguisticEncoder, PhoneticEncoder
-from decoder import Decoder
+from .encoder import AcousticEncoder, LinguisticEncoder, PhoneticEncoder
+from .decoder import Decoder
 
 class APL(nn.Module):
     def __init__(self, vocab_size):

@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
-from linguistic_encoder import Linguistic_encoder
-from acoustic_encoder import Acoustic_encoder
+from .linguistic_encoder import Linguistic_encoder
+from .acoustic_encoder import Acoustic_encoder
 
 
 class Acoustic_Linguistic(nn.Module):
@@ -32,5 +32,13 @@ class Acoustic_Linguistic(nn.Module):
         output = self.fc1(before_Linear)
 
         return output.squeeze(0)
+    
+if __name__ == '__main__':
+    import os
+    current_folder = os.path.dirname(os.path.realpath(__file__))
+    cp_path = os.path.join(current_folder, "checkpoints", "checkpoint.pth")
+    cp_state_dict_path = os.path.join(current_folder, "checkpoints", "checkpoint_state_dict.pth")
+    model = torch.load(cp_path, map_location=torch.device('cpu'))
+    torch.save(model.state_dict(), cp_state_dict_path)
         
         

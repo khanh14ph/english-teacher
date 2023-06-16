@@ -1,5 +1,5 @@
 import torch.nn as nn
-from stack_layer import CNN_Stack, RNN_Stack
+from .stack_layer import CNN_Stack, RNN_Stack
 
 class AcousticEncoder(nn.Module):
     def __init__(self, num_features_in=81, num_features_out=256):
